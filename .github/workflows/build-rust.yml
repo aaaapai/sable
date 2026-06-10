@@ -25,18 +25,19 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/common/build/cargo
-          key: ${{ runner.os }}-node-${{ hashFiles('common/src/main/rust/**/Cargo.lock') }}
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@main
 
       - name: Setup cargo-ndk
         run: |
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME" >> $GITHUB_ENV
           cargo install cargo-ndk
   
       - name: Run Gradle Task
-        run: ./gradlew common:buildRustNatives
+        run: |
+             echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+             echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
+             ./gradlew common:buildRustNatives
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
