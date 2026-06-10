@@ -37,7 +37,7 @@ jobs:
         run: |
              echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
              echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
-             ./gradlew common:buildRustNatives
+             ./gradlew buildRustNatives
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
