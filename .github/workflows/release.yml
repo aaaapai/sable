@@ -7,28 +7,28 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/openjdk/jdk:21-ubuntu
-      options: --user root
+
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@main
         with:
           distribution: 'temurin'
           java-version: 21
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@main
       - name: Make Gradle Wrapper Executable
         run: chmod +x ./gradlew
       - name: Execute Gradle build
         run: ./gradlew build
-      - name: Publish mods
-        run: ./gradlew publishMods
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-          CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v7.0.1
+        with:
+          # Artifact name. If the `archive` input is `false`, the name of the file uploaded will be the artifact name.
+          name: sable-java# optional, default is artifact
+          # A file, directory or wildcard pattern that describes what to upload.
+          path: |
+                **/*sable*.jar
