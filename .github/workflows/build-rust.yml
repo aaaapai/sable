@@ -1,5 +1,6 @@
 name: Build Rust Natives
 on:
+  push:
   workflow_dispatch:
 
 
@@ -43,4 +44,5 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: android-natives
-          path: target/android
+          path: |
+                **/*.so
