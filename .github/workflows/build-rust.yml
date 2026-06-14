@@ -1,9 +1,5 @@
 name: Build Rust Natives
 on:
-  push:
-    paths:
-      - 'sable_rapier/src/main/rust/**'
-      - '.github/workflows/build-rust.yml'
   workflow_dispatch:
 
 
@@ -18,34 +14,34 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
 
       - name: Setup Java
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@main
         with:
           distribution: 'temurin'
           java-version: 21
-          cache: gradle
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Cache cargo
-        uses: actions/cache@v4
-        with:
-          path: ${{ github.workspace }}/sable_rapier/build/cargo
-          key: ${{ runner.os }}-node-${{ hashFiles('sable_rapier/src/main/rust/**/Cargo.lock') }}
+      - name: Run sccache-cache
+        uses: mozilla-actions/sccache-action@main
 
-      - name: Run Gradle Task
-        run: ./gradlew sable_rapier:buildImages sable_rapier:buildRustNatives
-
-      - name: Take ownership of the workspace
-        run: sudo chown -R $USER:$USER .
-
-      - name: Commit and Push Changes
+      - name: Setup cargo-ndk
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m "Automated build rust natives" || echo "No changes to commit"
-          git push
+          echo "ANDROID_NDK_HOME=$ANDROID_NDK_LATEST_HOME" >> $GITHUB_ENV
+          cargo install cargo-ndk
+  
+      - name: Run Gradle Task
+        run: |
+             echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
+             echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
+             ./gradlew sable_rapier:buildRustNatives
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@main
+        with:
+          name: android-natives
+          path: |
+                **/*.so
