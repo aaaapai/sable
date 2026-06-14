@@ -1,6 +1,5 @@
 name: Build Rust Natives
 on:
-  push:
   workflow_dispatch:
 
 
@@ -38,7 +37,7 @@ jobs:
         run: |
              echo "SCCACHE_GHA_ENABLED=true" >> $GITHUB_ENV
              echo "RUSTC_WRAPPER=sccache" >> $GITHUB_ENV
-             ./gradlew common:buildRustNatives
+             ./gradlew sable_rapier:buildRustNatives
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@main
