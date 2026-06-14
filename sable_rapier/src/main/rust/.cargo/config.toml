@@ -1,6 +1,11 @@
-[target.x86_64-pc-windows-gnu]
-rustflags = ["-C", "link-arg=-Wl,-Brepro"]
+[target.aarch64-linux-android]
+rustflags = ["-C", "opt-level=3"]
 
-[target.x86_64-apple-darwin]
-# Required to avoid a rustc hang when building for this target.
-rustflags = ["-C", "codegen-units=2"]
+[target.armv7-linux-androideabi]
+rustflags = ["-C", "opt-level=3"]
+
+[target.x86_64-linux-android]
+rustflags = ["-C", "opt-level=3"]
+
+[target.i686-linux-android]
+rustflags = ["-C", "opt-level=3"]
